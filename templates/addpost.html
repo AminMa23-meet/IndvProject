@@ -7,12 +7,12 @@
 	<title>Add a Post</title>
 </head>
 <body>
-	 <form action="/add_post" method="POST">
+	 <form action="/add_post" method="POST" enctype="multipart/form-data">
             <div class="colm-form">
                 <div class="form-container" style="position:relative ; top: 300px; left: 750px;">
 					<input type="text" name="title" placeholder="title">
 					<input type="text" name="text" placeholder="text">
-					<input type="text" name="imglink" placeholder="Image Link">
+  					<input type="file" id="img" name="img" accept="image/*" style="border: none;">
                     <button type="submit" class="btn-login" name="Sui">Post</button>
 			</div>
 		</div>

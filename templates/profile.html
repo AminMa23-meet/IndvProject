@@ -6,14 +6,10 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>FaceNoteBook</title>
-        <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-        <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
-        <!-- Google fonts-->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
-        <!-- Core theme CSS (includes Bootstrap)-->
         <link href="../static/styles.css" rel="stylesheet" />
     </head>
     <body id="page-top">
@@ -56,14 +52,17 @@
             {%for i in posts%}
                 {%if uid == posts[i]['uid']%}
                 <div class="friend">
-                <img src="{{user['img']}}" style="position: relative; right: 150px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">  
-                <p style="color: black; position: relative; right: 90px; bottom: 60px;">{{user['username']}}</p>
-                <p style="color: black; position:relative; bottom:40px; right: 110px;" >{{posts[i]['text']}}</p>
-                <img  src="{{posts[i]['imglink']}}" width="375px" height="342px">
-            </div>
-            <br>
+                        <img src="{{user['img']}}" style="position: relative; right: 190px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">  
+                        <p style="color: black; position: relative; right: 90px; bottom: 60px;">{{user['username']}}</p>
+                        <h2 style="color: black; position:relative; bottom:40px; text-align: center;" >{{posts[i]['title']}}</h2>
+                        <p style="color: black; position:relative; bottom:50px; text-align: center;" >{{posts[i]['text']}}</p>
+                        <img  src="{{posts[i]['img']}}" width="375px" height="342px">
+                </div>
+                <br>
                 {%endif%}
             {%endfor%}
+
+
         </header>
        
         <!-- Footer-->

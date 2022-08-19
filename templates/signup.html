@@ -14,14 +14,14 @@
                 <img id="img" src="../static/img/logo1.png" alt="Logo">
                 <h2>FaceNotebook helps you connect and share with the people in your life.</h2>
             </div>
-            <form action="/signup" method="POST">
+            <form action="/signup" method="POST" enctype="multipart/form-data">
             <div class="colm-form">
                 <div class="form-container">
                 	<input type="text" name ="username" placeholder="Username">
                     <input type="email" name ="email" placeholder="Email address">
                     <input type="text" name ="name" placeholder="Full Name">
                     <input type="text" name ="bio" placeholder="Bio">
-                    <input type="text" name="img" placeholder= "Image Link">
+                    <input type="file" id="img" name="img" accept="image/*" style="border: none;">
                     <input type="password" name ="password" placeholder="Password">
                     
 

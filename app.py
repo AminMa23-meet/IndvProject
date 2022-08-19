@@ -1,8 +1,11 @@
+from cgi import FieldStorage
+from this import d
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask import session as login_session
 import pyrebase
 import requests
 import json
+import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config["SECRET_KEY"] = "sdjn;lakdfjase;oiasejf"
@@ -20,6 +23,7 @@ config = {
 firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
 db = firebase.database()
+storage = firebase.storage()
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -30,7 +34,7 @@ def signup():
         password = request.form['password']
         name = request.form['name']
         username = request.form['username']
-        img = request.form['img']
+        imgData = request.files['img']
         bio = request.form['bio']
         check = db.child('Users').get().val()
         for i in check:
@@ -38,6 +42,8 @@ def signup():
                 print('you need a unique username')
                 return render_template('signup.html')     
         try:
+            storage.child("imagesP").child(imgData.filename).put(imgData)
+            img = storage.child("imagesP").child(imgData.filename).get_url(None)
             user = {"email":email,"password":password,"name":name,"username":username,"bio":bio,"img":img}
             login_session['user']= auth.create_user_with_email_and_password(email, password)
             db.child('Users').child(login_session['user']["localId"]).set(user)
@@ -91,25 +97,23 @@ def home():
 def addpost():
     if request.method == 'POST':
         title = request.form['title']
-        imglink = request.form['imglink']
+        imgData = request.files['img']
         text = request.form['text']
         uid = login_session['user']['localId']
         try:
-            Post = {"title":title,"imglink":imglink,"text":text,"uid":uid}
+            storage.child("imagesP").child(imgData.filename).put(imgData)
+            img = storage.child("imagesP").child(imgData.filename).get_url(None)
+            Post = {"title":title,"img":img,"text":text,"uid":uid}
             db.child('Posts').push(Post)
             return redirect(url_for('home'))
         except:
-            print("Authentication error")
+            print("hi")
     return render_template('addpost.html')
 
 
 @app.route('/add_friend',methods=['GET', 'POST',])
 def addfriend():
     return render_template('add_friend.html')
-#    frq= {login_session['search']:db.child("Users").child(login_session['user']['localId']).get().val()['username']}
-#    db.child("friendreq").push(frq)
-#    return render_template('add_friend.html',frq = frq,hi = frq[login_session['search']])
-
     
 
 
