@@ -1,11 +1,8 @@
-from cgi import FieldStorage
-from this import d
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask import session as login_session
 import pyrebase
 import requests
 import json
-import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config["SECRET_KEY"] = "sdjn;lakdfjase;oiasejf"
@@ -20,10 +17,12 @@ config = {
   "appId":"1:1090680881443:web:859670f2c0fc3c3669cc96",
   "measurementId": "G-TPZJH0QWM8"
 }
+
 firebase = pyrebase.initialize_app(config)
-auth = firebase.auth()
+auth= firebase.auth()
 db = firebase.database()
 storage = firebase.storage()
+
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -36,6 +35,8 @@ def signup():
         username = request.form['username']
         imgData = request.files['img']
         bio = request.form['bio']
+        isAdmin = 'false'
+        isHelper = 'false'
         check = db.child('Users').get().val()
         for i in check:
             if check[i]['username'] == username:
@@ -44,7 +45,7 @@ def signup():
         try:
             storage.child("imagesP").child(imgData.filename).put(imgData)
             img = storage.child("imagesP").child(imgData.filename).get_url(None)
-            user = {"email":email,"password":password,"name":name,"username":username,"bio":bio,"img":img}
+            user = {"email":email,"password":password,"name":name,"username":username,"bio":bio,"img":img,"isAdmin":isAdmin,"isHelper":isHelper}
             login_session['user']= auth.create_user_with_email_and_password(email, password)
             db.child('Users').child(login_session['user']["localId"]).set(user)
             return redirect(url_for('login'))
@@ -54,14 +55,13 @@ def signup():
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    error = ''
     if request.method == 'POST':
         if 'login' in request.form:
             email = request.form['email']
             password = request.form['password']
             try:
                 login_session['user'] = auth.sign_in_with_email_and_password(email, password)
-                return redirect(url_for('home'))  
+                return redirect(url_for('home'))
             except:
                 print("Authentication error")
                 return render_template('login.html')
@@ -74,22 +74,16 @@ def login():
 
 
 @app.route('/home', methods=['GET', 'POST'])
-def home():
+def home():  
     response = requests.get("https://api.kanye.rest")
     parsed_content = json.loads(response.content) 
     quote = parsed_content['quote']
-    username = db.child("Users").child(login_session["user"]["localId"]).child('username').get().val()
-    img = db.child("Users").child(login_session["user"]["localId"]).child('img').get().val()
+    idToken = auth.refresh(login_session['user']['refreshToken'])
+    db.child('Users').child(login_session['user']["localId"]).update({"idToken":idToken})
+    user = db.child("Users").child(login_session["user"]["localId"]).get().val()
     posts = db.child('Posts').get().val()
     allusers = db.child("Users").get().val()
-    if request.method == "POST":
-        hello = 1
-        login_session['search'] = request.form['search']
-        print(login_session)
-        return render_template('index.html',quote = quote, img = img , username = username , posts = posts, uid = login_session['user']['localId'], allusers = allusers, hello = hello)
-    else:
-        hello = 0    
-        return render_template('index.html', quote = quote ,users = allusers , img = img , username = username , posts = posts, uid = login_session['user']['localId'], hello = hello)
+    return render_template('index.html', quote = quote ,users = allusers , posts = posts,user = user)
 
 
 
@@ -103,7 +97,7 @@ def addpost():
         try:
             storage.child("imagesP").child(imgData.filename).put(imgData)
             img = storage.child("imagesP").child(imgData.filename).get_url(None)
-            Post = {"title":title,"img":img,"text":text,"uid":uid}
+            Post = {"title":title,"img":img,"text":text,"uid":uid,"likes":0,"comments":{}}
             db.child('Posts').push(Post)
             return redirect(url_for('home'))
         except:
@@ -123,23 +117,81 @@ def signout():
     auth.current_user = None
     return redirect('/')
 
-@app.route('/profile')
-def profile():
+@app.route('/profile/<string:usernameP>')
+def profile(usernameP):
+    user = db.child("Users").child(login_session["user"]["localId"]).get().val()
     response = requests.get("https://api.kanye.rest")
-    parsed_content = json.loads(response.content) 
+    parsed_content = json.loads(response.content)
     quote = parsed_content['quote']
-    username = db.child("Users").child(login_session["user"]["localId"]).child('username').get().val()
-    bio = db.child("Users").child(login_session["user"]["localId"]).child('bio').get().val()
-    fullname = db.child("Users").child(login_session["user"]["localId"]).child('name').get().val()
-    img = db.child("Users").child(login_session["user"]["localId"]).child('img').get().val()
     posts = db.child('Posts').get().val()
-    uid = login_session['user']['localId']
-    user = db.child('Users').child(login_session['user']['localId']).get().val()
-    return render_template('profile.html', quote = quote ,user = user , posts = posts ,uid = uid, username = username , bio = bio , fullname = fullname , img = img )
+    allusers = db.child("Users").get().val()
+    return render_template('profile.html', user = user , quote = quote ,posts = posts, allusers = allusers, usernameP = usernameP)
 
-@app.route('/hello')
-def hello():
-    return render_template("home.html")
+
+@app.route('/update/<string:postId>', methods=['GET', 'POST'])
+def update(postId):
+    if request.method == 'POST':
+        title = {"title":request.form['title']}
+        text = {"text":request.form['text']}
+        db.child('Posts').child(postId).update(title)
+        db.child('Posts').child(postId).update(text)
+        return redirect('/home')
+    return render_template('updatePost.html', postId = postId)
+
+
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    if request.method == "POST":
+        db.child('Posts').child(request.form['delete']).remove()
+    return redirect(request.form['url'])
+
+@app.route('/deleteUser', methods=['GET', 'POST'])
+def deleteUser():
+    uid = request.form['delete']
+    email = request.form['email']
+    password = request.form['password']
+    emailC = request.form['emailC']
+    passwordC = request.form['passwordC']
+    if request.method == "POST":
+        login_session['user'] = None
+        auth.current_user = None
+        login_session['user'] = auth.sign_in_with_email_and_password(email,password)
+        idToken = auth.refresh(login_session['user']['refreshToken'])
+        db.child('Users').child(login_session['user']["localId"]).update({"idToken":idToken})
+        auth.delete_user_account(login_session['user']['idToken'])
+        login_session['user'] = None
+        auth.current_user = None
+        login_session['user'] = auth.sign_in_with_email_and_password(emailC,passwordC)
+        db.child('Users').child(uid).remove()
+        for i in db.child('Posts').get().val().keys():
+            if db.child('Posts').child(i).child('uid').get().val() == uid:
+                db.child('Posts').child(i).remove()
+    if emailC == email:
+        return redirect('/')
+    else:
+        return redirect('home')
+
+
+@app.route('/like',methods=['GET', 'POST'])
+def like():
+    like = {"likes":db.child('Posts').child(request.form['post']).child('likes').get().val()+1}
+    dislike = {"likes":db.child('Posts').child(request.form['post']).child('likes').get().val()-1}
+    liked = db.child('Users').child(login_session["user"]["localId"]).child('liked').get().val()
+    if request.form['post'] in liked:
+        db.child('Posts').child(request.form['post']).update(dislike)
+        liked.remove(request.form['post'])
+        db.child('Users').child(login_session["user"]["localId"]).update({'liked':liked})
+    else:
+        db.child('Posts').child(request.form['post']).update(like)
+        liked.append(request.form['post'])
+        db.child('Users').child(login_session["user"]["localId"]).update({'liked':liked})
+    return redirect(request.form['url'])
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

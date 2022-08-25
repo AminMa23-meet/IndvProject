@@ -15,6 +15,7 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="../static/styles.css" rel="stylesheet" />
+        
     </head>
     <body id="page-top">
         <!-- Navigation-->
@@ -27,8 +28,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile" style="position:relative; top: 15px;">{{username}}</a></li>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile"><img src="{{img}}" width="80px" height="70px" style="border-radius: 50%; position: relative; bottom:15px;"></a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile/{{user['username']}}" style="position:relative; top: 15px;">{{user['username']}}</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile/{{user['username']}}"><img src="{{user['img']}}" width="80px" height="70px" style="border-radius: 50%; position: relative; bottom:15px;"></a></li>
                         <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="{{url_for('signout')}}" style="position:relative; top: 50px; right: 235px; font-size: 12px;">SignOut</a></li>
                         
                     </ul>
@@ -44,11 +45,49 @@
                     {%for k in users%}
                         {%if k == posts[i]['uid']%}
                             <div class="friend">
-                                <img src="{{users[k]['img']}}" style="position: relative; right: 190px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">  
+                                {%if (user['isAdmin'] == 'true') or (user['isHelper'] == 'true')%}
+                                    <form method="POST" action="/delete">
+                                    <div tabindex="0" class="menu">
+                                        <div class="menu-dropdown">
+                                            <button id="Delete" type="submit">Delete</button>
+                                            {%if users[k]['username'] == user['username']%}
+                                                <a id="update" href="{{ url_for('update', postId = i)}}">Update</a>
+                                            {%endif%}
+                                            <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
+                                            <input type="text" value="home" name="url" style="visibility: hidden; width: 5px;">
+                                        </div>
+                                    </form>
+                                    </div>
+                                {%else%}
+                                    {%if (users[k]['username'] == user['username'])%}
+                                        <form method="POST" action="/delete">
+                                        <div tabindex="0" class="menu">
+                                            <div class="menu-dropdown">
+                                                <button id="Delete" type="submit">Delete</button>
+                                                <a id="update" href="{{ url_for('update', postId = i) }}">Update</a>
+                                                <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
+                                                <input type="text" value="home" name="url" style="visibility: hidden; width: 5px;">
+                                            </div>
+                                        </form>
+                                        </div>
+                                  {%endif%}
+                                {%endif%}
+                                <a href='{{url_for('profile', usernameP=users[k]['username'])}}'><img src="{{users[k]['img']}}" style="position: relative; right: 190px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;"></a>  
                                 <p style="color: black; position: relative; right: 90px; bottom: 60px;">{{users[k]['username']}}</p>
                                 <h2 style="color: black; position:relative; bottom:40px; text-align: center;" >{{posts[i]['title']}}</h2>
                                 <p style="color: black; position:relative; bottom:50px; text-align: center;" >{{posts[i]['text']}}</p>
                                 <img  src="{{posts[i]['img']}}" width="375px" height="342px">
+                                <br>
+                                <form action="/like" method="POST">
+                                    {%if i in user['liked']%}
+                                        <button type="submit" id="like"><img width="30px" height="30px" src="../static/img/heartf.png"></button>
+                                    {%else%}
+                                        <button type="submit" id="like"><img width="40px" height="30px" src="../static/img/heartb.png"></button>
+                                    {%endif%}
+                                    <p id="amount" style="color: black;">{{posts[i]['likes']}}</p>
+                                    <input type="text" value="{{i}}" name="post" style="visibility: hidden; width: 5px;">
+                                    <input type="text" value="home" name="url" style="visibility: hidden; width: 5px;">
+                                </form>
                             </div>
                         <br>
                 {%endif%}
@@ -102,5 +141,6 @@
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+        <script src="../static/js/javascript.js"></script>
     </body>
 </html>

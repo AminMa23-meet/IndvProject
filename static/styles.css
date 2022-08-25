@@ -11529,3 +11529,85 @@ html {
   height: 100%;
   padding: 10px;
 }
+.menu {
+  position:relative;
+  left: 150px;
+  top: 30px;
+  display:inline-block;
+  z-index:2; 
+  padding:0;
+  margin:0;
+  outline:0;
+  text-align:left;
+}
+
+/* style for the button */
+.menu:before {
+  content: "..."; 
+  color:black;
+  padding: 5px 10px;
+  font-size:20px ;
+  border-radius:3px;
+  background-color: transparent;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#96305e', endColorstr='#751749',GradientType=0 );
+}
+
+.menu:focus { pointer-events:none; }
+
+/* If :focus detected the dropdown menu is displayed by making it visible */
+.menu:focus .menu-dropdown { opacity:1; visibility:visible; }
+
+/* style for the dropdown box */
+.menu-dropdown {
+  color:black ;
+  background-color: transparent;
+  width: 70px;
+  margin:3px 0 0 0;
+  padding-bottom: 10px;
+  pointer-events: auto;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: visibility 1s;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1f8bd3', endColorstr='#1b61b7',GradientType=0 );
+}
+
+/* style the links in the dropdown */
+.menu-dropdown a {
+  background:transparent;
+  border:none;
+  outline:0;
+  display:block;
+  width:70px;
+  padding:5px;
+}
+.menu-dropdown button {
+  background:transparent;
+  text-decoration: underline;
+  border:none;
+  outline:0;
+  display:block;
+  width:70px;
+  padding:5px;
+  position: relative;
+  right: 5px;
+}
+#Delete{
+  color: red;
+}
+#update{
+  color: #0885bf;
+}
+#like{
+  border: none;
+  background-color: transparent;
+  float:left;
+  margin-left: 68px;
+  margin-top: 10px;
+}
+#amount{
+  float: left;
+  margin-left: 1px;
+  margin-top: 14px;
+}

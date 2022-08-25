@@ -23,8 +23,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile" style="position:relative; top: 15px;">{{username}}</a></li>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile"><img src="{{img}}" width="80px" height="70px" style="border-radius: 50%; position: relative; bottom:15px;"></a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile/{{user['username']}}" style="position:relative; top: 15px;">{{user['username']}}</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/profile/{{user['username']}}"><img src="{{user['img']}}" width="80px" height="70px" style="border-radius: 50%; position: relative; bottom:15px;"></a></li>
                         <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="{{url_for('signout')}}" style="position:relative; top: 50px; right: 235px; font-size: 12px;">SignOut</a></li>
                         
                     </ul>
@@ -35,32 +35,91 @@
         <header class="masthead bg-primary text-white text-center">
             <h1>{{quote}}</h1>
             <br>
+            {%if user['username'] == usernameP%}
             <a href="/add_post"><img height="50px" width="50px" style="float: right; margin-right: 10px;" src="../static/img/add.png"></a>
+            {%endif%}
             <h1>Profile:</h1>
              <div class="friend">
-                <img src="{{user['img']}}" style="position: relative; right: 10px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">
-                <p style="color: black; position: relative; right: 10px; bottom: 10px;">{{user['username']}}</p>
-                <p style="color: black; position:relative;  right: 10px;">Email: {{user['email']}}</p>
-                <p style="color: black; position:relative;  right: 10px;" >Full Name :{{user['name']}}</p>
-                <p style="color: black; position:relative;  right: 10px;" >UserName: {{user['username']}}</p>
-                <p style="color: black; position:relative;  right: 1px;" >Bio: {{user['bio']}}</p>
+                {%for i in allusers%}
+                    {%if usernameP == allusers[i]['username']%}
+                        <img src="{{allusers[i]['img']}}" style="position: relative; right: 10px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">
+                        {%if user['isAdmin'] == 'true'%}
+                        <form method="POST" action="/deleteUser">
+                            <button id="Delete" type="submit">Delete</button>
+                            <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{allusers[i]['email']}}" name="email" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{allusers[i]['password']}}" name="password" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{user['email']}}" name="emailC" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{user['password']}}" name="passwordC" style="visibility: hidden; width: 5px;">
+                        </form>
+                        {%endif%}
+                        <p style="color: black; position: relative; right: 10px; bottom: 10px;">{{allusers[i]['username']}}</p>
+                        <p style="color: black; position:relative;  right: 10px;">Email: {{allusers[i]['email']}}</p>
+                        <p style="color: black; position:relative;  right: 10px;" >Full Name :{{allusers[i]['name']}}</p>
+                        <p style="color: black; position:relative;  right: 10px;" >UserName: {{allusers[i]['username']}}</p>
+                        <p style="color: black; position:relative;  right: 1px;" >Bio: {{allusers[i]['bio']}}</p>
+                    {%endif%}
+                {%endfor%}
             </div>
             <br>
             <br>
-            <h1>Your Posts:</h1>
+            <h1>{{usernameP}} Posts:</h1>
             <div id="wrapper">
-            {%for i in posts%}
-                {%if uid == posts[i]['uid']%}
-                <div class="friend">
-                        <img src="{{user['img']}}" style="position: relative; right: 190px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">  
-                        <p style="color: black; position: relative; right: 90px; bottom: 60px;">{{user['username']}}</p>
-                        <h2 style="color: black; position:relative; bottom:40px; text-align: center;" >{{posts[i]['title']}}</h2>
-                        <p style="color: black; position:relative; bottom:50px; text-align: center;" >{{posts[i]['text']}}</p>
-                        <img  src="{{posts[i]['img']}}" width="375px" height="342px">
-                </div>
-                <br>
-                {%endif%}
-            {%endfor%}
+                {%for k in allusers.keys()%}
+                        {%for i in posts%}
+                            {%if k == posts[i]['uid']%}
+                            {%if usernameP == allusers[k]['username']%}
+                                    <div class="friend">
+                                            {%if (user['isAdmin'] == 'true') or (user['isHelper'] == 'true')%}
+                                                <form method="POST" action="/delete">
+                                                <div tabindex="0" class="menu">
+                                                    <div class="menu-dropdown">
+                                                        <button id="Delete" type="submit">Delete</button>
+                                                        {%if allusers[k]['username'] == user['username']%}
+                                                            <a id="update" href="{{ url_for('update', postId = i) }}">Update</a>
+                                                        {%endif%}
+                                                        <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
+                                                        <input type="text" value="home" name="url" style="visibility: hidden; width: 5px;">
+                                                    </div>
+                                                </form>
+                                                </div>
+                                            {%else%}
+                                            {%if (allusers[k]['username'] == user['username'])%}
+                                                <form method="POST" action="/delete">
+                                                <div tabindex="0" class="menu">
+                                                    <div class="menu-dropdown">
+                                                        <button id="Delete" type="submit">Delete</button>
+                                                        <a id="update" href="{{ url_for('update', postId = i) }}">Update</a>
+                                                        <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
+                                                        <input type="text" value="home" name="url" style="visibility: hidden; width: 5px;">
+                                                    </div>
+                                                </form>
+                                                </div>
+                                        {%endif%}
+                                    {%endif%}
+                                        <img src="{{allusers[k]['img']}}" style="position: relative; right: 190px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">  
+                                        <p style="color: black; position: relative; right: 90px; bottom: 60px;">{{allusers[k]['username']}}</p>
+                                        <h2 style="color: black; position:relative; bottom:40px; text-align: center;" >{{posts[i]['title']}}</h2>
+                                        <p style="color: black; position:relative; bottom:50px; text-align: center;" >{{posts[i]['text']}}</p>
+                                        <img  src="{{posts[i]['img']}}" width="375px" height="342px">
+                                        <form action="/like" method="POST">
+                                            {%if i in user['liked']%}
+                                            <button type="submit" id="like"><img width="30px" height="30px" src="../static/img/heartf.png"></button>
+                                            {%else%}
+                                            <button type="submit" id="like"><img width="40px" height="30px" src="../static/img/heartb.png"></button>
+                                            {%endif%}
+                                            <p id="amount" style="color: black;">{{posts[i]['likes']}}</p>
+                                            <input type="text" value="{{i}}" name="post" style="visibility: hidden; width: 5px;">
+                                            <input type="text" value="profile/{{usernameP}}" name="url" style="visibility: hidden; width: 5px;">
+                                        </form>
+                                </div>
+                                <br>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                {%endfor%}
+            
+
 
 
         </header>
