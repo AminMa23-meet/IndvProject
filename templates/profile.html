@@ -39,13 +39,13 @@
             <a href="/add_post"><img height="50px" width="50px" style="float: right; margin-right: 10px;" src="../static/img/add.png"></a>
             {%endif%}
             <h1>Profile:</h1>
-             <div class="friend">
+             <div class="friend" style="width:300px ;">
                 {%for i in allusers%}
                     {%if usernameP == allusers[i]['username']%}
-                        <img src="{{allusers[i]['img']}}" style="position: relative; right: 10px;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">
+                        <img src="{{allusers[i]['img']}}" style="position: relative;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">
                         {%if user['isAdmin'] == 'true'%}
                         <form method="POST" action="/deleteUser">
-                            <button id="Delete" type="submit">Delete</button>
+                            <button id="Delete" type="submit" style="border:none; background-color:transparent; margin-left:55px; margin-bottom:20px ;">Delete User</button>
                             <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
                             <input type="text" value="{{allusers[i]['email']}}" name="email" style="visibility: hidden; width: 5px;">
                             <input type="text" value="{{allusers[i]['password']}}" name="password" style="visibility: hidden; width: 5px;">
@@ -54,7 +54,7 @@
                         </form>
                         {%else%}
                         <form method="POST" action="/deleteUser">
-                            <button id="Delete" type="submit">Delete</button>
+                            <button id="Delete" type="submit" style="border:none; background-color:transparent;">Delete User</button>
                             <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
                             <input type="text" value="{{allusers[i]['email']}}" name="email" style="visibility: hidden; width: 5px;">
                             <input type="text" value="{{allusers[i]['password']}}" name="password" style="visibility: hidden; width: 5px;">
@@ -62,11 +62,10 @@
                             <input type="text" value="{{user['password']}}" name="passwordC" style="visibility: hidden; width: 5px;">
                         </form>
                         {%endif%}
-                        <p style="color: black; position: relative; right: 10px; bottom: 10px;">{{allusers[i]['username']}}</p>
-                        <p style="color: black; position:relative;  right: 10px;">Email: {{allusers[i]['email']}}</p>
-                        <p style="color: black; position:relative;  right: 10px;" >Full Name :{{allusers[i]['name']}}</p>
-                        <p style="color: black; position:relative;  right: 10px;" >UserName: {{allusers[i]['username']}}</p>
-                        <p style="color: black; position:relative;  right: 1px;" >Bio: {{allusers[i]['bio']}}</p>
+                        <p style="color: black; position:relative;">Email: {{allusers[i]['email']}}</p>
+                        <p style="color: black; position:relative;" >Full Name :{{allusers[i]['name']}}</p>
+                        <p style="color: black; position:relative;" >UserName: {{allusers[i]['username']}}</p>
+                        <p style="color: black; position:relative;" >Bio: {{allusers[i]['bio']}}</p>
                     {%endif%}
                 {%endfor%}
             </div>
