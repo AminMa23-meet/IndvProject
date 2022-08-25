@@ -52,6 +52,15 @@
                             <input type="text" value="{{user['email']}}" name="emailC" style="visibility: hidden; width: 5px;">
                             <input type="text" value="{{user['password']}}" name="passwordC" style="visibility: hidden; width: 5px;">
                         </form>
+                        {%else%}
+                        <form method="POST" action="/deleteUser">
+                            <button id="Delete" type="submit">Delete</button>
+                            <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{allusers[i]['email']}}" name="email" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{allusers[i]['password']}}" name="password" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{user['email']}}" name="emailC" style="visibility: hidden; width: 5px;">
+                            <input type="text" value="{{user['password']}}" name="passwordC" style="visibility: hidden; width: 5px;">
+                        </form>
                         {%endif%}
                         <p style="color: black; position: relative; right: 10px; bottom: 10px;">{{allusers[i]['username']}}</p>
                         <p style="color: black; position:relative;  right: 10px;">Email: {{allusers[i]['email']}}</p>
