@@ -11643,5 +11643,27 @@ display: inline-block;
 font-size: 16px;
 border-radius: 5px;
 margin-bottom: 10px;
-
+}
+.Chat{
+background-color: transparent; /* Green */
+border: 1px cyan solid;
+color: cyan;
+padding: 15px 16px;
+text-align: center;
+display:flow-root;
+text-decoration: none;
+font-size: 16px;
+border-radius: 5px;
+margin-bottom: 10px;
+}
+#Chat{
+  background-color: transparent; /* Green */
+  border: 1px cyan solid;
+  color: cyan;
+  padding: 15px 16px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }

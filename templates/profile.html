@@ -56,11 +56,16 @@
       {%for i in allusers.keys()%}
       {%if usernameP == allusers[i]['username']%}
       <img src="{{allusers[i]['img']}}" style="position: relative;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">
-      {%if user['username'] != usernameP%}
+      {%if (user['username'] != usernameP) and not(i in user["friends"])%}
       <form action="/add_friend/{{uid}}/{{i}}" method="POST">
         <button type="submit" id="addfriend">Add Friend +</button>
       </form>
+      {%elif user['username'] != usernameP%}
+      <form action="" method="POST">
+        <button type="submit" id="Chat">Chat</button>
+      </form>
       {%endif%}
+
       {%if user['isAdmin'] == 'true'%}
       <form method="POST" action="/deleteUser">
         <button id="Delete" type="submit" style="border:none; background-color:transparent; margin-left:55px; margin-bottom:20px ;">Delete User</button>
@@ -80,6 +85,14 @@
         <input type="text" value="{{user['password']}}" name="passwordC" style="visibility: hidden; width: 5px;">
       </form>
       {%endif%}
+      {%if user['username'] == usernameP%}
+      <form action="" method="POST">
+        <a href="/friendReq/{{uid}}" class="Chat">Friend Requests</a>
+      </form>
+      <form action="" method="POST">
+          <a href="#" class="Chat">Friends</a>
+        </form>
+        {%endif%}
       <p style="color: black; position:relative;">Email: {{allusers[i]['email']}}</p>
       <p style="color: black; position:relative;">Full Name :{{allusers[i]['name']}}</p>
       <p style="color: black; position:relative;">UserName: {{allusers[i]['username']}}</p>

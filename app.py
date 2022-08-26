@@ -112,6 +112,9 @@ def addfriend(sender,receiver):
     fR = {"sender":sender,"receiver":receiver,"accept":"A"}
     if request.method == "POST":
         print(sender)
+        if receiver in db.child("Users").child(sender).child("friends").get().val() or sender in db.child("Users").child(sender).child("friends").get().val():
+            print("you are already friends")
+            return redirect('/home')
         for i in db.child("FriendReq").get().val().keys():
             print(db.child("FriendReq").child(i).child("receiver").get().val())
             if db.child("FriendReq").child(i).child("sender").get().val() == sender:
@@ -120,24 +123,23 @@ def addfriend(sender,receiver):
                 break
             elif db.child("FriendReq").child(i).child("receiver").get().val() == sender:
                 db.child("FriendReq").child(i).child("accept").set("true")
-                sF = db.child("Users").child(sender).child("friends").get().val()
-                rF = db.child("Users").child(receiver).child("friends").get().val()
+                sf = db.child("Users").child(sender).child("friends").get().val()
+                rf = db.child("Users").child(receiver).child("friends").get().val()
                 if "A" in rf:
                     rf.remove("A")
                 elif "A" in sf:
                     sf.remove("A")
                 rf.append(sender)
                 sf.append(receiver)
-                db.child("Users").child(sender).child("friends").set(sF)
-                db.child("Users").child(receiver).child("friends").set(rF)
+                db.child("Users").child(sender).child("friends").set(sf)
+                db.child("Users").child(receiver).child("friends").set(rf)
                 db.child("FriendReq").child(i).remove()
                 return redirect('/home')
                 break
         try:
             db.child("FriendReq").push(fR)
         except:
-            print("couldn't send Friend request")
-        return redirect('/home')
+            return redirect('/home')
     return redirect('/home')
 
 
@@ -228,7 +230,16 @@ def searchFU():
     print("user not Found")
     return redirect('home')
 
-
+@app.route('/friendReq/<string:uid>')
+def friendReq(uid):
+    response = requests.get("https://api.kanye.rest")
+    parsed_content = json.loads(response.content)
+    quote = parsed_content['quote']
+    user = db.child("Users").child(uid)
+    users = db.child("Users")
+    friendReq = db.child("FriendReq").get().val()
+    print()
+    return render_template("FrReq.html", uid = uid, quote = quote, user = user, fr = db, users = user)
 
 
 
