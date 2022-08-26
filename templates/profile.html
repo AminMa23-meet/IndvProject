@@ -53,9 +53,14 @@
     {%endif%}
     <h1>Profile:</h1>
     <div class="friend" style="width:300px ;">
-      {%for i in allusers%}
+      {%for i in allusers.keys()%}
       {%if usernameP == allusers[i]['username']%}
       <img src="{{allusers[i]['img']}}" style="position: relative;  height: 60px; width: 60px; margin: 15px; border-radius: 50%;">
+      {%if user['username'] != usernameP%}
+      <form action="/add_friend/{{uid}}/{{i}}" method="POST">
+        <button type="submit" id="addfriend">Add Friend +</button>
+      </form>
+      {%endif%}
       {%if user['isAdmin'] == 'true'%}
       <form method="POST" action="/deleteUser">
         <button id="Delete" type="submit" style="border:none; background-color:transparent; margin-left:55px; margin-bottom:20px ;">Delete User</button>

@@ -35,29 +35,24 @@ def signup():
         username = request.form['username']
         imgData = request.files['img']
         bio = request.form['bio']
-        liked={"a"}
+        liked=["a"]
+        friends=["A"]
         isAdmin = 'false'
         isHelper = 'false'
         check = db.child('Users').get().val()
-        for i in check:
-            if check[i]['username'] == username:
-                print('you need a unique username')
-                return render_template('signup.html')
         try:
-            print("1")
+            for i in check:
+                if check[i]['username'] == username:
+                    print('you need a unique username')
+                    return render_template('signup.html')
             storage.child("imagesP").child(imgData.filename).put(imgData)
-            print("2")
             img = storage.child("imagesP").child(imgData.filename).get_url(None)
-            print("3")
-            user = {"email":email,"password":password,"name":name,"username":username,"bio":bio,"img":img,"isAdmin":isAdmin,"isHelper":isHelper,"liked":liked}
-            print("4")
+            user = {"email":email, "password":password, "name":name, "username":username, "bio":bio,"img": img ,"isAdmin":isAdmin ,"isHelper":isHelper,"liked":liked,"friends":friends}
             login_session['user']= auth.create_user_with_email_and_password(email, password)
-            print(login_session['user'])
             db.child('Users').child(login_session['user']["localId"]).set(user)
-            print("6")
             return redirect(url_for('login'))
         except:
-            print("Authentication error")
+            return render_template("signup.html")
     return render_template("signup.html")
 
 @app.route('/', methods=['GET', 'POST'])
@@ -90,7 +85,7 @@ def home():
     user = db.child("Users").child(login_session["user"]["localId"]).get().val()
     posts = db.child('Posts').get().val()
     allusers = db.child("Users").get().val()
-    return render_template('index.html', quote = quote ,users = allusers , posts = posts,user = user)
+    return render_template('index.html', quote = quote ,users = allusers , posts = posts, user = user)
 
 
 
@@ -104,7 +99,7 @@ def addpost():
         try:
             storage.child("imagesP").child(imgData.filename).put(imgData)
             img = storage.child("imagesP").child(imgData.filename).get_url(None)
-            Post = {"title":title,"img":img,"text":text,"uid":uid,"likes":0,"comments":{}}
+            Post = {"title":title,"img":img,"text":text,"uid":uid,"likes":0,"comments":{"A":"A"}}
             db.child('Posts').push(Post)
             return redirect(url_for('home'))
         except:
@@ -112,10 +107,38 @@ def addpost():
     return render_template('addpost.html')
 
 
-@app.route('/add_friend',methods=['GET', 'POST',])
-def addfriend():
-    return render_template('add_friend.html')
-
+@app.route('/add_friend/<string:sender>/<string:receiver>',methods=['GET', 'POST',])
+def addfriend(sender,receiver):
+    fR = {"sender":sender,"receiver":receiver,"accept":"A"}
+    if request.method == "POST":
+        print(sender)
+        for i in db.child("FriendReq").get().val().keys():
+            print(db.child("FriendReq").child(i).child("receiver").get().val())
+            if db.child("FriendReq").child(i).child("sender").get().val() == sender:
+                print("Friend request has already been sent")
+                return redirect('/home')
+                break
+            elif db.child("FriendReq").child(i).child("receiver").get().val() == sender:
+                db.child("FriendReq").child(i).child("accept").set("true")
+                sF = db.child("Users").child(sender).child("friends").get().val()
+                rF = db.child("Users").child(receiver).child("friends").get().val()
+                if "A" in rf:
+                    rf.remove("A")
+                elif "A" in sf:
+                    sf.remove("A")
+                rf.append(sender)
+                sf.append(receiver)
+                db.child("Users").child(sender).child("friends").set(sF)
+                db.child("Users").child(receiver).child("friends").set(rF)
+                db.child("FriendReq").child(i).remove()
+                return redirect('/home')
+                break
+        try:
+            db.child("FriendReq").push(fR)
+        except:
+            print("couldn't send Friend request")
+        return redirect('/home')
+    return redirect('/home')
 
 
 @app.route('/signout')
@@ -132,7 +155,7 @@ def profile(usernameP):
     quote = parsed_content['quote']
     posts = db.child('Posts').get().val()
     allusers = db.child("Users").get().val()
-    return render_template('profile.html', user = user , quote = quote ,posts = posts, allusers = allusers, usernameP = usernameP)
+    return render_template('profile.html', uid = login_session["user"]["localId"] , user = user , quote = quote ,posts = posts, allusers = allusers, usernameP = usernameP)
 
 
 @app.route('/update/<string:postId>', methods=['GET', 'POST'])

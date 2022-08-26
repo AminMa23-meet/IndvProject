@@ -11515,7 +11515,7 @@ html {
     flex-basis: 550px;
     flex-grow: 1;
     margin: 10px;
-    
+
 
 }
 #wrapper {
@@ -11532,7 +11532,7 @@ html {
   left: 150px;
   top: 30px;
   display:inline-block;
-  z-index:2; 
+  z-index:2;
   padding:0;
   margin:0;
   outline:0;
@@ -11541,7 +11541,7 @@ html {
 
 /* style for the button */
 .menu:before {
-  content: "..."; 
+  content: "...";
   color:black;
   padding: 5px 10px;
   font-size:20px ;
@@ -11631,4 +11631,17 @@ html {
   .topnav input[type=text] {
     border: 1px solid #ccc;
   }
+}
+#addfriend{
+background-color: transparent; /* Green */
+border: 1px lightgreen solid;
+color: lightgreen;
+padding: 15px 16px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+border-radius: 5px;
+margin-bottom: 10px;
+
 }
