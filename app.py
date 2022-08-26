@@ -35,19 +35,26 @@ def signup():
         username = request.form['username']
         imgData = request.files['img']
         bio = request.form['bio']
+        liked={"a"}
         isAdmin = 'false'
         isHelper = 'false'
         check = db.child('Users').get().val()
         for i in check:
             if check[i]['username'] == username:
                 print('you need a unique username')
-                return render_template('signup.html')     
+                return render_template('signup.html')
         try:
+            print("1")
             storage.child("imagesP").child(imgData.filename).put(imgData)
+            print("2")
             img = storage.child("imagesP").child(imgData.filename).get_url(None)
-            user = {"email":email,"password":password,"name":name,"username":username,"bio":bio,"img":img,"isAdmin":isAdmin,"isHelper":isHelper}
+            print("3")
+            user = {"email":email,"password":password,"name":name,"username":username,"bio":bio,"img":img,"isAdmin":isAdmin,"isHelper":isHelper,"liked":liked}
+            print("4")
             login_session['user']= auth.create_user_with_email_and_password(email, password)
+            print(login_session['user'])
             db.child('Users').child(login_session['user']["localId"]).set(user)
+            print("6")
             return redirect(url_for('login'))
         except:
             print("Authentication error")
@@ -74,9 +81,9 @@ def login():
 
 
 @app.route('/home', methods=['GET', 'POST'])
-def home():  
+def home():
     response = requests.get("https://api.kanye.rest")
-    parsed_content = json.loads(response.content) 
+    parsed_content = json.loads(response.content)
     quote = parsed_content['quote']
     idToken = auth.refresh(login_session['user']['refreshToken'])
     db.child('Users').child(login_session['user']["localId"]).update({"idToken":idToken})
@@ -108,7 +115,7 @@ def addpost():
 @app.route('/add_friend',methods=['GET', 'POST',])
 def addfriend():
     return render_template('add_friend.html')
-    
+
 
 
 @app.route('/signout')
@@ -187,6 +194,16 @@ def like():
         liked.append(request.form['post'])
         db.child('Users').child(login_session["user"]["localId"]).update({'liked':liked})
     return redirect(request.form['url'])
+
+@app.route('/searchFU',methods=['GET', 'POST'])
+def searchFU():
+    username = request.form['search']
+    for i in db.child('Users').get().val().keys():
+        if db.child('Users').child(i).child('username').get().val() == username:
+            print(username)
+            return redirect("profile/"+username)
+    print("user not Found")
+    return redirect('home')
 
 
 
