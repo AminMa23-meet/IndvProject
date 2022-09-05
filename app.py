@@ -117,7 +117,7 @@ def addfriend(sender,receiver):
             return redirect('/home')
         for i in db.child("FriendReq").get().val().keys():
             print(db.child("FriendReq").child(i).child("receiver").get().val())
-            if db.child("FriendReq").child(i).child("sender").get().val() == sender:
+            if db.child("FriendReq").child(i).child("sender").get().val() == sender and db.child("FriendReq").child(i).child("receiver").get().val() == receiver:
                 print("Friend request has already been sent")
                 return redirect('/home')
                 break
@@ -127,7 +127,7 @@ def addfriend(sender,receiver):
                 rf = db.child("Users").child(receiver).child("friends").get().val()
                 if "A" in rf:
                     rf.remove("A")
-                elif "A" in sf:
+                if "A" in sf:
                     sf.remove("A")
                 rf.append(sender)
                 sf.append(receiver)
@@ -225,7 +225,6 @@ def searchFU():
     username = request.form['search']
     for i in db.child('Users').get().val().keys():
         if db.child('Users').child(i).child('username').get().val() == username:
-            print(username)
             return redirect("profile/"+username)
     print("user not Found")
     return redirect('home')
@@ -235,11 +234,60 @@ def friendReq(uid):
     response = requests.get("https://api.kanye.rest")
     parsed_content = json.loads(response.content)
     quote = parsed_content['quote']
-    user = db.child("Users").child(uid)
-    users = db.child("Users")
-    friendReq = db.child("FriendReq").get().val()
-    print()
-    return render_template("FrReq.html", uid = uid, quote = quote, user = user, fr = db, users = user)
+    friend_Req = db.child("FriendReq").get().val()
+    user = db.child("Users").child(login_session["user"]["localId"]).get().val()
+    allusers =  db.child("Users").get().val()
+    return render_template("FrReq.html", quote = quote , friend_Req = friend_Req, uid = login_session["user"]["localId"], user = user, allusers = allusers)
+
+@app.route('/decision/<string:dec>/<string:sender>/<string:receiver>/<string:friendReq>', methods=['GET', 'POST'])
+def decision(dec,sender,receiver,friendReq):
+    if request.method == "POST":
+        if dec == "deny":
+            db.child("FriendReq").child(friendReq).child("accept").set("false")
+            db.child("FriendReq").child(friendReq).remove()
+            return redirect("/home")
+        else:
+            db.child("FriendReq").child(friendReq).child("accept").set("true")
+            sf = db.child("Users").child(sender).child("friends").get().val()
+            rf = db.child("Users").child(receiver).child("friends").get().val()
+            if "A" in rf:
+                rf.remove("A")
+            if "A" in sf:
+                sf.remove("A")
+            rf.append(sender)
+            sf.append(receiver)
+            db.child("Users").child(sender).child("friends").set(sf)
+            db.child("Users").child(receiver).child("friends").set(rf)
+            db.child("FriendReq").child(friendReq).remove()
+        return redirect("/home")
+    else:
+        return redirect("/home")
+
+@app.route('/friends/<string:uid>', methods=['GET', 'POST'])
+def friends(uid):
+    user = db.child("Users").child(login_session["user"]["localId"]).get().val()
+    allusers = db.child("Users").get().val()
+    return render_template("friends.html", user = user, allusers = allusers)
+
+
+@app.route('/Chat/<string:user1>/<string:user2>', methods=['GET', 'POST'])
+def chat(user1,user2):
+    user = db.child("Users").child(login_session["user"]["localId"]).get().val()
+    allChats = db.child("Chat").get().val()
+    for i in allChats.keys():
+        if allChats[i]['user1'] == user2 and allChats[i]['user2'] == user1:
+            return redirect("/Chat/"+user2+"/"+user1)
+    return render_template("chat.html", user = user)
+
+
+
+
+
+
+
+
+
+
 
 
 

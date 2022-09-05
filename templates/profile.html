@@ -61,7 +61,7 @@
         <button type="submit" id="addfriend">Add Friend +</button>
       </form>
       {%elif user['username'] != usernameP%}
-      <form action="" method="POST">
+      <form action="/Chat/a/a" method="POST">
         <button type="submit" id="Chat">Chat</button>
       </form>
       {%endif%}
@@ -90,7 +90,7 @@
         <a href="/friendReq/{{uid}}" class="Chat">Friend Requests</a>
       </form>
       <form action="" method="POST">
-          <a href="#" class="Chat">Friends</a>
+          <a href="/friends/{{uid}}" class="Chat">Friends</a>
         </form>
         {%endif%}
       <p style="color: black; position:relative;">Email: {{allusers[i]['email']}}</p>

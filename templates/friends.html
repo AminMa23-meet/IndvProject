@@ -47,20 +47,16 @@
   <!-- Masthead-->
   <header class="masthead bg-primary text-white text-center" style="height:1000px;">
     <h1>{{quote}}</h1>
-    {%for i in friend_Req.keys()%}
-      {%if uid == friend_Req[i]["receiver"]%}
+    {%for i in user['friends']%}
+      {%if (i == "A") or (i == None) or (i == "hi")%}
+      {%else%}
         <div class="FRq" style="color:black;">
-          <a href = "/profile/{{allusers[friend_Req[i]["sender"]]['username']}}"><img src="{{allusers[friend_Req[i]["sender"]]["img"]}}" width="80px" height="70px" style="border-radius: 50%;"></a>
-        <p>{{allusers[friend_Req[i]["sender"]]["username"]}}</p>
-        <form action="/decision/accept/{{friend_Req[i]["sender"]}}/{{friend_Req[i]["receiver"]}}/{{i}}" method="post">
-          <button type="submit">Accept</button>
-        </form>
-        <form action="/decision/deny/{{friend_Req[i]["sender"]}}/{{friend_Req[i]["receiver"]}}/{{i}}" method="post">
-          <button type="submit">Deny</button>
-        </form>
+          <a href = "/profile/{{allusers[i]['username']}}"><img src="{{allusers[i]['img']}}" width="80px" height="70px" style="border-radius: 50%;"></a>
+        <p>{{allusers[i]["username"]}}</p>
+        </div>
       {%endif%}
     {%endfor%}
-  </div>
+
   </header>
 
   <!-- Footer-->

@@ -11667,3 +11667,14 @@ margin-bottom: 10px;
   border-radius: 5px;
   margin-bottom: 10px;
 }
+.FRq{
+  flex: 1 0 21%;
+    display: inline-block;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 3px;
+    overflow: auto;
+    flex-basis: 550px;
+    flex-grow: 1;
+    margin: 10px;
+}
