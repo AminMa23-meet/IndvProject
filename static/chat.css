@@ -1,8 +1,4 @@
-*{
-  padding:0;
-  margin:0;
-  font-family:inherit;
-}
+*{ padding:0; margin:0; font-family:Helvetica ,Arial , sans-serif; }
 .All{
   color:white;
   height: 1078px;
@@ -24,5 +20,35 @@
   float:right;
 }
 #pfp{
-
+  border: 0;
+  border-radius: 50%;
+  height: 36px;
+  width: 36px;
+}
+.header{
+  width: 341px;
+  height: 63px;
+}
+.Chats{
+  width: 341px;
+  height: 990px;
+}
+.people{
+  border: solid 1px #2f2f2f;
+  height: 70px;
+}
+.person{
+  display: inline-block;
+}
+#name{
+  position: relative;
+  bottom: 20px;
+  left: 20px;
+}
+#img{
+  border:0;
+  border-radius: 50%;
+  position: relative;
+  left: 10px;
+  top: 10px;
 }
