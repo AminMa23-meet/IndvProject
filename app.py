@@ -8,14 +8,14 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config["SECRET_KEY"] = "sdjn;lakdfjase;oiasejf"
 
 config = {
-  "apiKey": "AIzaSyBjZusSvudpDXISXWYcnaNLREvkf9Fv1ao",
-  "authDomain": "facenotebook-524d4.firebaseapp.com",
-  "databaseURL": "https://facenotebook-524d4-default-rtdb.europe-west1.firebasedatabase.app",
-  "projectId": "facenotebook-524d4",
-  "storageBucket": "facenotebook-524d4.appspot.com",
-  "messagingSenderId": "1090680881443",
-  "appId":"1:1090680881443:web:859670f2c0fc3c3669cc96",
-  "measurementId": "G-TPZJH0QWM8"
+  "apiKey": "AIzaSyAmOhrHX4ZfPzdq8ps9Px3z0_XgF0IwFhU",
+  "authDomain": "facenotebook-1f3ae.firebaseapp.com",
+  "databaseURL": "https://facenotebook-1f3ae-default-rtdb.europe-west1.firebasedatabase.app",
+  "projectId": "facenotebook-1f3ae",
+  "storageBucket": "facenotebook-1f3ae.appspot.com",
+  "messagingSenderId": "422564047966",
+  "appId":"1:422564047966:web:cbbae047f94d16fe6bd8cf",
+  "measurementId": "G-P4V9VNL86K"
 }
 
 firebase = pyrebase.initialize_app(config)
@@ -48,6 +48,8 @@ def signup():
             storage.child("imagesP").child(imgData.filename).put(imgData)
             img = storage.child("imagesP").child(imgData.filename).get_url(None)
             user = {"email":email, "password":password, "name":name, "username":username, "bio":bio,"img": img ,"isAdmin":isAdmin ,"isHelper":isHelper,"liked":liked,"friends":friends}
+            print(email)
+            print(password)
             login_session['user']= auth.create_user_with_email_and_password(email, password)
             db.child('Users').child(login_session['user']["localId"]).set(user)
             return redirect(url_for('login'))
@@ -160,16 +162,6 @@ def profile(usernameP):
     return render_template('profile.html', uid = login_session["user"]["localId"] , user = user , quote = quote ,posts = posts, allusers = allusers, usernameP = usernameP)
 
 
-@app.route('/update/<string:postId>', methods=['GET', 'POST'])
-def update(postId):
-    if request.method == 'POST':
-        title = {"title":request.form['title']}
-        text = {"text":request.form['text']}
-        db.child('Posts').child(postId).update(title)
-        db.child('Posts').child(postId).update(text)
-        return redirect('/home')
-    return render_template('updatePost.html', postId = postId)
-
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -270,14 +262,6 @@ def friends(uid):
     return render_template("friends.html", user = user, allusers = allusers)
 
 
-@app.route('/Chat/<string:user1>/<string:user2>', methods=['GET', 'POST'])
-def chat(user1,user2):
-    user = db.child("Users").child(login_session["user"]["localId"]).get().val()
-    allChats = db.child("Chat").get().val()
-    for i in allChats.keys():
-        if allChats[i]['user1'] == user2 and allChats[i]['user2'] == user1:
-            return redirect("/Chat/"+user2+"/"+user1)
-    return render_template("chat.html", user = user)
 
 
 

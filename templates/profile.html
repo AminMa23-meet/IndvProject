@@ -60,10 +60,6 @@
       <form action="/add_friend/{{uid}}/{{i}}" method="POST">
         <button type="submit" id="addfriend">Add Friend +</button>
       </form>
-      {%elif user['username'] != usernameP%}
-      <form action="/Chat/a/a" method="POST">
-        <button type="submit" id="Chat">Chat</button>
-      </form>
       {%endif%}
 
       {%if user['isAdmin'] == 'true'%}
@@ -114,9 +110,6 @@
           <div tabindex="0" class="menu">
             <div class="menu-dropdown">
               <button id="Delete" type="submit">Delete</button>
-              {%if allusers[k]['username'] == user['username']%}
-              <a id="update" href="{{ url_for('update', postId = i) }}">Update</a>
-              {%endif%}
               <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
               <input type="text" value="home" name="url" style="visibility: hidden; width: 5px;">
             </div>
@@ -128,7 +121,6 @@
         <div tabindex="0" class="menu">
           <div class="menu-dropdown">
             <button id="Delete" type="submit">Delete</button>
-            <a id="update" href="{{ url_for('update', postId = i) }}">Update</a>
             <input type="text" value="{{i}}" name="delete" style="visibility: hidden; width: 5px;">
             <input type="text" value="home" name="url" style="visibility: hidden; width: 5px;">
           </div>
